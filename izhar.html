@@ -1,0 +1,163 @@
+<!-- Link to Public Repository - https://github.com/Izharkhan/Lab9.git	-->
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table {
+	font-family: verdana,arial,sans-serif;
+	font-size:20px;
+	color:#333333;
+	border-width: 2px;
+	border-color: #999999;
+	border-collapse: collapse;
+}
+th {
+color:yellow;
+font-size:25px;
+	background-color:#c3dde0;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+table, tr {
+	background-color:#d4e3e5;
+}
+table, td {
+font-size:20px;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+
+</style>
+</head>
+<body>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
+<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<div id="calendar" ng-app="myapp" ng-controller="controller">
+
+<table id="cal" align="center">
+	<tr><td colspan='7' align="center">{{cal.currMonth()}}</td></tr>
+	<tr>
+		<th>Sun</th>
+		<th>Mon</th>
+		<th>Tue</th>
+		<th>Wed</th>
+		<th>Thur</th>
+		<th>Fri</th>
+		<th>Sat</th>
+	</tr>
+	<tr ng-repeat="row in dates">
+		<td ng-repeat="col in row track by $index">
+		 {{col}}
+		</td>
+	</tr>
+</table>
+
+<div  ng-controller="Controller"> 
+
+<ul>
+  <li>
+    {{result.results.channel.item.condition.temp + " " + result.results.channel.item.condition.text}}
+  </li>
+</ul>
+
+</div>
+
+
+</div> 
+<script >
+					var dateNow = new Date();
+					 var month = dateNow.getMonth();
+					 var year = dateNow.getFullYear();
+					  var monthNames = ["January","February","March","April","May","June","July","August","September","October","November", "December"];
+					
+		
+		     	 var FebNumberOfDays ="";
+				 var date= dateNow.getDate();
+				 var day= dateNow.getDay();
+				 var first=date;
+				 
+				 	 //Determing if February (28,or 29)  
+				 if (month == 1){
+					if ( (year%100!=0) && (year%4==0) || (year%400==0)){
+					  FebNumberOfDays = 29;
+					}else{
+					  FebNumberOfDays = 28;
+					}
+				 }
+				  var dayPerMonth = ["31", ""+FebNumberOfDays+"","31","30","31","30","31","31","30","31","30","31"]
+	
+				 
+				var x = new Array(6);
+				for (var i = 0; i < 6; i++) {
+				  x[i] = new Array(7);
+				}
+			 
+				while(first!=1){
+					first--;
+					day--;
+			
+					if(day<0){
+						day=6;
+						}
+				}
+		
+			 var count=1;
+			 var flag=0;
+				for (var i=0;i<6;i++){
+					for(var j=0;j<7;j++){
+					
+					x[i][day]=count;
+					
+					count++;
+					day++;
+					if(day==7){day=0;}
+					if(count>parseInt(dayPerMonth[month])){
+						flag=1;
+						break;
+						
+						
+						}
+					
+					}
+					if (flag==1){
+					break;
+					
+					}
+				}
+				
+		
+				
+
+    var app=angular.module("myapp", [])
+         app.controller("controller", function($scope) {
+
+			$scope.dates=x;
+            $scope.cal = {
+				currMonth: function() {
+					 var dateNow = new Date();
+					 var month = dateNow.getMonth();
+					 var year = dateNow.getFullYear();
+					 var monthNames = ["January","February","March","April","May","June","July","August","September","October","November", "December"];	 
+				return monthNames[month]+", "+year;
+			  }
+			
+			};  //scope
+         });	//controller
+		 app.controller('Controller', function($scope, $http) {
+		  $http.get("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22islamabad%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
+		  .success(function (response) {
+		  $scope.result = response.query;}
+		  );
+		});
+  
+</script>
+
+</body>
+</html>
+
+
+
